@@ -92,17 +92,34 @@ function handleInputs(e){
 
     input.style.border = "1px solid #ccc";
 
-    if ((key === "cat1" || key === "cat2") && value > 50) {
-        return reject();
+    const subject = state.subjects[rowIndex];
+    const isSTS = subject.courseName.toLowerCase() === "sts";
+
+    // ---- CAT VALIDATION ----
+    if (key === "cat1" || key === "cat2") {
+        const maxCat = isSTS ? 30 : 50;
+        if (value > maxCat) return reject();
     }
 
-    if (key === "fat" && value > 100) {
-        return reject();
+    // ---- FAT VALIDATION ----
+    if (key === "fat") {
+        const maxFat = isSTS ? 50 : 100;
+        if (value > maxFat) return reject();
     }
 
-    if ((key === "da1" || key === "da2" || key === "da3") && value > 10) {
-        return reject();
+    // ---- DA VALIDATION ----
+    if (key === "da1" || key === "da2" || key === "da3") {
+
+        if (isSTS) {
+            if (key === "da3") return reject();
+            if (value > 15) return reject();
+        } 
+        else {
+            if (value > 10) return reject();
+        }
     }
+
+    // ---- GRADE VALIDATION ----
     if (key === "grade") {
         const validGrades = ["S","A","B","C","D"];
         if (!validGrades.includes(rawValue.toUpperCase())) {
@@ -112,9 +129,10 @@ function handleInputs(e){
         input.value = value;
     }
 
-    state.subjects[rowIndex][key] = input.type === "number" ? (value || 0) : value;
+    subject[key] = input.type === "number" ? (value || 0) : value;
     saveToLocalStorage();
 }
+
 
 function deleteCourse(index){
     state.subjects = state.subjects.filter((_, i) => i !== index);
@@ -153,6 +171,7 @@ function calculateGpa(){
 
     render_gpa(gpa);
 }
+
 function render_gpa(gpa){
     const gpaDiv = document.querySelector(".gpa-display");
 
@@ -178,31 +197,47 @@ function render(){
                 switch(col.key){
 
                     case "cat1weightage":
-                        subject.cat1weightage = catWeightage(subject.cat1);
-                        td.textContent = subject.cat1weightage;
+                        const isSTS1 = subject.courseName.toLowerCase() === "sts";
+                        const catOutOf = isSTS1 ? 30 : 50;
+                        subject.cat1weightage = (subject.cat1 / catOutOf) * 15;
+                        td.textContent = subject.cat1weightage.toFixed(2);
                         break;
+
 
                     case "cat2weightage":
-                        subject.cat2weightage = catWeightage(subject.cat2);
-                        td.textContent = subject.cat2weightage;
+                        const isSTS2 = subject.courseName.toLowerCase() === "sts";
+                        const catOutOf2 = isSTS2 ? 30 : 50;
+                        subject.cat2weightage = (subject.cat2 / catOutOf2) * 15;
+                        td.textContent = subject.cat2weightage.toFixed(2);
                         break;
+
 
                     case "fatweightage":
-                        subject.fatweightage = fatWeightage(subject.fat);
-                        td.textContent = subject.fatweightage;
+                        
+                        const isSTS3 = subject.courseName.toLowerCase() === "sts";
+                        const fatOutOf = isSTS3 ? 50 : 100;
+                        subject.fatweightage = (subject.fat / fatOutOf) * 40;
+                        td.textContent = subject.fatweightage.toFixed(2);
                         break;
 
+
                     case "total":
+                        
+                        const isSTS4 = subject.courseName.toLowerCase() === "sts";
+
+                        const daTotal = isSTS4
+                            ? subject.da1 + subject.da2
+                            : subject.da1 + subject.da2 + subject.da3;
+
                         subject.total =
                             subject.cat1weightage +
                             subject.cat2weightage +
                             subject.fatweightage +
-                            subject.da1 +
-                            subject.da2 +
-                            subject.da3;
+                            daTotal;
 
-                        td.textContent = subject.total;
+                        td.textContent = subject.total.toFixed(2);
                         break;
+
 
                     case "gradepoint":
                         subject.gradepoint =
@@ -214,6 +249,7 @@ function render(){
 
                 table_row.append(td);
             }
+            
 
             else if(col.type == "input"){
 
@@ -225,19 +261,33 @@ function render(){
                 input.type = col.inputType;
                 input.value = subject[col.key] ?? "";
 
+                const isSTS = subject.courseName.toLowerCase() === "sts";
+
                 if(col.inputType === "number"){
                     input.min = 0;
 
                     if(col.key === "cat1" || col.key === "cat2"){
-                        input.max = 50;
+                        input.max = isSTS ? 30 : 50;
                     }
 
                     if(col.key === "fat"){
-                        input.max = 100;
+                        input.max = isSTS ? 50 : 100;
                     }
 
-                    if(col.key === "da1" || col.key === "da2" || col.key === "da3"){
-                        input.max = 10;
+                    if(col.key === "da1" || col.key === "da2"){
+                        input.max = isSTS ? 15 : 10;
+                    }
+
+                    if(col.key === "da3"){
+                        if(isSTS){
+                            input.value = 0;
+                            input.disabled = true;
+                            input.style.opacity = "0.3";
+                        } else {
+                            input.max = 10;
+                            input.disabled = false;
+                            input.style.opacity = "1";
+                        }
                     }
 
                     input.addEventListener("keydown", function(e){
@@ -246,6 +296,8 @@ function render(){
                         }
                     });
                 }
+
+                
 
                 if(col.key === "grade"){
                     input.style.textTransform = "uppercase";
