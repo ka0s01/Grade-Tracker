@@ -9,10 +9,9 @@ function loadFromLocalStorage() {
 }
 
 loadFromLocalStorage();
-const savedGpa = localStorage.getItem("gpa");
-if(savedGpa){
-    render_gpa(Number(savedGpa));
-}
+const gpaDiv = document.querySelector(".gpa-display");
+gpaDiv.style.display = "none";
+
 
 render();
 
@@ -133,6 +132,27 @@ function handleKeyPress(e){
 function handleBlur(e){
     render();
 }
+
+function calculateGpa(){
+    let gradepointSum = 0;
+    let totalCredits = 0;
+
+    state.subjects.forEach((subject)=>{
+        gradepointSum += subject.gradepoint;
+        totalCredits += Number(subject.courseCredits);
+    });
+
+    if(totalCredits === 0){
+        render_gpa(0);
+        return;
+    }
+
+    let gpa = gradepointSum / totalCredits;
+
+    localStorage.setItem("gpa", gpa);
+
+    render_gpa(gpa);
+}
 function render_gpa(gpa){
     const gpaDiv = document.querySelector(".gpa-display");
 
@@ -140,7 +160,10 @@ function render_gpa(gpa){
         <h2>Current GPA</h2>
         <p>${gpa.toFixed(2)}</p>
     `;
+
+    gpaDiv.style.display = "flex"; 
 }
+
 
 function render(){
     row.innerHTML = "";
@@ -149,8 +172,6 @@ function render(){
         const table_row = document.createElement("tr");
 
         columns.forEach((col) => {
-
-            // ---------- DERIVED ----------
             if(col.type == "derived"){
                 let td = document.createElement("td");
 
@@ -194,7 +215,6 @@ function render(){
                 table_row.append(td);
             }
 
-            // ---------- INPUT ----------
             else if(col.type == "input"){
 
                 let td = document.createElement("td");
@@ -238,15 +258,12 @@ function render(){
                 td.append(input);
                 table_row.append(td);
             }
-
-            // ---------- COURSE NAME ----------
             else if(col.label == "Course"){
                 let td = document.createElement("td");
                 td.textContent = subject.courseName;
                 table_row.append(td);
             }
 
-            // ---------- DELETE ----------
             else if(col.type === "action"){
                 let td = document.createElement("td");
                 const btn = document.createElement("button");

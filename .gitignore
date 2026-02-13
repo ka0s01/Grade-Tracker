@@ -1,1 +1,18 @@
-venv
+
+# Node
+node_modules/
+package-lock.json
+
+# Python
+venv/
+__pycache__/
+
+# Vercel
+.vercel/
+
+# Environment files
+.env
+.env.local
+
+# OS junk
+.DS_Store
