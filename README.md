@@ -43,6 +43,17 @@ This is a simple GPA Calculator, Mark Tracker I built using HTML, CSS and JavaSc
 
 - Using localStorage
 
+
+## Future Improvements
+
+- Auto-update GPA without clicking a button
+
+- Add semester tracking
+
+- Add export to CSV
+
+- Add GPA graph
+
 - Calculating derived values cleanly
 
 - Refactoring messy logic into cleaner functions
