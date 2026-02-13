@@ -13,7 +13,9 @@ let columns = [
     { label: "DA-3", key: "da3", type: "input", inputType: "number" },
     { label: "FAT", key: "fat", type: "input", inputType: "number" },
     { label: "FAT-Weightage", key: "fatweightage", type: "derived" },
-    { label: "Total", key: "total", type: "derived" },   // move this up
+    { label: "Total", key: "total", type: "derived" },
     { label: "Grade", key: "grade", type: "input", inputType: "text" },
-    { label: "Grade-Points", key: "gradepoint", type: "derived" }
+    { label: "Grade-Points", key: "gradepoint", type: "derived" },
+    { label: "Delete", key: "delete", type: "action" }
+
 ];

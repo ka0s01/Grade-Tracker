@@ -18,23 +18,31 @@ render();
 
 
 function addCourse(e){
-    if(e.target.dataset.action=="add"){
-        let name = document.getElementById("course-name").value;
-        let credits = Number(document.getElementById("course-credits").value);
+    if(e.target.dataset.action == "add"){
 
-        if(!name || credits <= 0){
-            if(!name){
-                alert("Course name is required");
-            }
-            else{
-                alert("Credits must be greater than 0");
-            }
+        const nameInput = document.getElementById("course-name");
+        const creditInput = document.getElementById("course-credits");
+
+        const name = nameInput.value.trim();
+        const credits = Number(creditInput.value);
+
+        // Reset borders
+        nameInput.style.border = "1px solid #ccc";
+        creditInput.style.border = "1px solid #ccc";
+
+        if(name === ""){
+            nameInput.style.border = "2px solid red";
+            return;
+        }
+
+        if(!Number.isInteger(credits) || credits <= 0){
+            creditInput.style.border = "2px solid red";
             return;
         }
 
         state.subjects.push({
             courseName: name,
-            courseCredits: credits,   // now stored as Number
+            courseCredits: credits,
             cat1: 0,
             cat2: 0,
             da1: 0,
@@ -49,31 +57,14 @@ function addCourse(e){
             grade: ""
         });
 
+        nameInput.value = "";
+        creditInput.value = "";
+
         saveToLocalStorage();
         render();
     }
 }
 
-function calculateGpa(){
-    let gradepointSum = 0;
-    let totalCredits = 0;
-
-    state.subjects.forEach((subject)=>{
-        gradepointSum += subject.gradepoint;
-        totalCredits += Number(subject.courseCredits);
-    });
-
-    if(totalCredits === 0){
-        render_gpa(0);
-        return;
-    }
-
-    let gpa = gradepointSum / totalCredits;
-
-    localStorage.setItem("gpa", gpa);
-
-    render_gpa(gpa);
-}
 
 
 function saveToLocalStorage() {
@@ -126,6 +117,11 @@ function handleInputs(e){
     saveToLocalStorage();
 }
 
+function deleteCourse(index){
+    state.subjects = state.subjects.filter((_, i) => i !== index);
+    saveToLocalStorage();
+    render();
+}
 
 
 function handleKeyPress(e){
@@ -146,107 +142,135 @@ function render_gpa(gpa){
     `;
 }
 
-
 function render(){
-    row.innerHTML=``
-    state.subjects.forEach((subject,i) =>{
+    row.innerHTML = "";
+
+    state.subjects.forEach((subject,i) => {
         const table_row = document.createElement("tr");
 
-        columns.forEach((col,j)=>{
-            if(col.type=="derived"){
+        columns.forEach((col) => {
+
+            // ---------- DERIVED ----------
+            if(col.type == "derived"){
                 let td = document.createElement("td");
+
                 switch(col.key){
+
                     case "cat1weightage":
-                        let cat1_marks = subject.cat1;
-                        let cat1_weightage = catWeightage(cat1_marks) 
-                        subject.cat1weightage= cat1_weightage; 
-                        td.textContent = cat1_weightage;
-                        table_row.append(td);
-                        break;
-                    case "cat2weightage":
-                        let cat2_marks = subject.cat2;
-                        let cat2_weightage = catWeightage(cat2_marks) 
-                        subject.cat2weightage= cat2_weightage; 
-                        td.textContent = cat2_weightage;
-                        table_row.append(td);
-                        break;
-                    case "fatweightage":
-                        let fat_marks = subject.fat;
-                        let fat_weightage = fatWeightage(fat_marks);
-                        subject.fatweightage= fat_weightage; 
-                        td.textContent=fat_weightage;
-                        table_row.append(td);
+                        subject.cat1weightage = catWeightage(subject.cat1);
+                        td.textContent = subject.cat1weightage;
                         break;
 
-                    case "total" :
-                        let total = subject.cat1weightage + subject.cat2weightage + subject.fatweightage + subject.da1 + subject.da2 + subject.da3;
-                        td.textContent = total;
-                        subject.total= total; 
-                        table_row.append(td);
+                    case "cat2weightage":
+                        subject.cat2weightage = catWeightage(subject.cat2);
+                        td.textContent = subject.cat2weightage;
+                        break;
+
+                    case "fatweightage":
+                        subject.fatweightage = fatWeightage(subject.fat);
+                        td.textContent = subject.fatweightage;
+                        break;
+
+                    case "total":
+                        subject.total =
+                            subject.cat1weightage +
+                            subject.cat2weightage +
+                            subject.fatweightage +
+                            subject.da1 +
+                            subject.da2 +
+                            subject.da3;
+
+                        td.textContent = subject.total;
                         break;
 
                     case "gradepoint":
-                        let gp = gradePoint(subject.grade)*subject.courseCredits;
-                        td.textContent = gp;
-                        subject.gradepoint= gp; 
-                        table_row.append(td);
+                        subject.gradepoint =
+                            gradePoint(subject.grade) * subject.courseCredits;
+
+                        td.textContent = subject.gradepoint;
                         break;
+                }
 
-
-                }   
-
+                table_row.append(td);
             }
-            else if(col.type=="input"){
-                
+
+            // ---------- INPUT ----------
+            else if(col.type == "input"){
+
                 let td = document.createElement("td");
                 const input = document.createElement("input");
+
                 input.dataset.row = i;
-                input.type = col.inputType;
                 input.dataset.key = col.key;
+                input.type = col.inputType;
                 input.value = subject[col.key] ?? "";
-                // event listener for inputs
+
+                if(col.inputType === "number"){
+                    input.min = 0;
+
+                    if(col.key === "cat1" || col.key === "cat2"){
+                        input.max = 50;
+                    }
+
+                    if(col.key === "fat"){
+                        input.max = 100;
+                    }
+
+                    if(col.key === "da1" || col.key === "da2" || col.key === "da3"){
+                        input.max = 10;
+                    }
+
+                    input.addEventListener("keydown", function(e){
+                        if(e.key === "-" || e.key === "e"){
+                            e.preventDefault();
+                        }
+                    });
+                }
+
+                if(col.key === "grade"){
+                    input.style.textTransform = "uppercase";
+                }
+
                 input.addEventListener("input",handleInputs);
                 input.addEventListener("keydown", handleKeyPress);
                 input.addEventListener("blur",handleBlur);
-                
-                
+
                 td.append(input);
                 table_row.append(td);
-
-                
-
             }
-            else if (col.label=="Course"){
+
+            // ---------- COURSE NAME ----------
+            else if(col.label == "Course"){
                 let td = document.createElement("td");
-                td.textContent=subject.courseName;
+                td.textContent = subject.courseName;
                 table_row.append(td);
             }
 
-        })
+            // ---------- DELETE ----------
+            else if(col.type === "action"){
+                let td = document.createElement("td");
+                const btn = document.createElement("button");
+
+                btn.textContent = "❌";
+                btn.classList.add("delete-btn");
+
+                btn.addEventListener("click", function(){
+                    deleteCourse(i);
+                });
+
+                td.append(btn);
+                table_row.append(td);
+            }
+
+
+        });
+
         row.appendChild(table_row);
-
-
-    })
-    // Set limits
-    if (col.key === "cat1" || col.key === "cat2") {
-        input.max = 50;
-    }
-
-    if (col.key === "fat") {
-        input.max = 100;
-    }
-
-    if (col.key === "da1" || col.key === "da2" || col.key === "da3") {
-        input.max = 10;
-    }
-
-    if (col.key === "grade") {
-        input.style.textTransform = "uppercase";
-    }
+    });
 
     saveToLocalStorage();
-
 }
+
 
 
 form.addEventListener("click",addCourse)

@@ -1,5 +1,16 @@
 /* Import a modern, clean font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Prevent browser autofill white background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #0f1115 inset !important;
+    box-shadow: 0 0 0 1000px #0f1115 inset !important;
+    -webkit-text-fill-color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
 
 /* Basic Reset & Global Styles */
 * {
@@ -93,7 +104,9 @@ button {
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
-
+#calculate-gpa{
+    margin-top: 20px;
+}
 button:hover {
     background-color: #059669;
     transform: translateY(-1px);
@@ -118,16 +131,16 @@ button:active {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    text-align: center;
 }
 
 /* Table Styling */
 table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-bottom: 24px;
-    text-align: center;
+    border-collapse: collapse;
+    table-layout: auto; /* allows columns to size properly */
 }
+
 
 th, td {
     padding: 14px 10px;
@@ -151,15 +164,17 @@ tbody tr {
 tbody tr:hover {
     background-color: #232830;
 }
+th:first-child,
+td:first-child {
+    padding-left: 16px;
+}
 
 /* Table Inputs */
 td input {
-    width: 65px; /* Keeps the table from getting too wide */
+    width: 60px;
     padding: 8px 4px;
-    text-align: center;
-    border-color: #2d333b;
-    background-color: #0f1115;
 }
+
 
 td input:focus {
     background-color: #1a1d24;
@@ -252,3 +267,56 @@ input[type=number] {
     line-height: 1;
     text-shadow: 0 0 25px rgba(16, 185, 129, 0.4); /* Strong glowing effect */
 }
+.delete-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #f87171; /* soft red */
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.delete-btn:hover {
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(248, 113, 113, 0.4);
+    box-shadow: 0 4px 14px rgba(248, 113, 113, 0.25);
+    transform: translateY(-2px);
+}
+
+.delete-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.delete-btn::after {
+    content: "Delete";
+    position: absolute;
+    bottom: 140%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.95);
+    background: rgba(20, 20, 20, 0.95);
+    color: #f87171;
+    font-size: 0.7rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    border: 1px solid rgba(248, 113, 113, 0.25);
+}
+
+.delete-btn:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
