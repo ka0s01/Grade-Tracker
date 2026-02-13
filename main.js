@@ -34,7 +34,7 @@ function addCourse(e){
             return;
         }
 
-        if(!Number.isInteger(credits) || credits <= 0){
+        if(isNaN(credits) || credits <= 0){
             creditInput.style.border = "2px solid red";
             return;
         }
