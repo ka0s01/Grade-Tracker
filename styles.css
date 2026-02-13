@@ -1,28 +1,254 @@
-body{
-    border: 1px solid black;
+/* Import a modern, clean font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Basic Reset & Global Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f1115; /* Deep dark grey/black */
+    color: #e2e8f0; /* Soft off-white for readability */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+/* Header Styling */
+.header {
+    margin-bottom: 30px;
     text-align: center;
-    padding: 20px;
-    gap: 10px;
 }
-.marks-table{
-    margin-top: 50px;
-    border: 1px solid black;
+
+.header h1 {
+    color: #10b981; /* Vibrant Emerald Green */
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.15); /* Subtle green glow */
+}
+
+/* Form Container */
+#form {
+    background-color: #1a1d24;
+    border: 1px solid #2d333b;
+    border-radius: 12px;
+    padding: 24px;
     display: flex;
-    
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-}
-.form-container{
-    border: 1px solid black;
-    padding: 20px;
-}
-h3,h1{
-    margin: 5px auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    margin-bottom: 40px;
+    width: 100%;
+    max-width: 800px;
 }
 
-
-#row-insert input{
-    width: 40px;
+#form label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #94a3b8;
 }
- 
+
+/* Global Input Styling */
+input[type="text"],
+input[type="number"] {
+    background-color: #0f1115;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* Form specific input widths */
+#course-name { width: 250px; }
+#course-credits { width: 100px; }
+
+/* Buttons */
+button {
+    background-color: #10b981;
+    color: #022c22; /* Very dark green text for contrast */
+    border: none;
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+button:hover {
+    background-color: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Table Container */
+/* Update this block */
+.marks-table {
+    background-color: #1a1d24;
+    border: 1px solid #2d333b;
+    border-radius: 12px;
+    padding: 24px;
+    width: 96%; /* Increased from 100% (with margins) to take up most of the screen */
+    max-width: 1600px; /* Increased from 1300px to allow more stretching */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+th, td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #2d333b;
+    white-space: nowrap;
+}
+
+th {
+    color: #10b981;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #10b981;
+}
+
+tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+    background-color: #232830;
+}
+
+/* Table Inputs */
+td input {
+    width: 65px; /* Keeps the table from getting too wide */
+    padding: 8px 4px;
+    text-align: center;
+    border-color: #2d333b;
+    background-color: #0f1115;
+}
+
+td input:focus {
+    background-color: #1a1d24;
+}
+
+/* Result Display */
+.gpa-display {
+    margin-top: 30px;
+    padding: 20px 40px;
+    background-color: #1a1d24;
+    border: 1px solid #10b981;
+    border-radius: 12px;
+    color: #10b981;
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+    display: empty; /* Hides it if it's empty initially */
+}
+
+.gpa-display:not(:empty) {
+    display: block;
+}
+
+/* Custom Scrollbar for the table overflow and body */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f1115;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #10b981;
+}
+/* Remove arrows from number inputs in Chrome, Safari, Edge, and Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Remove arrows from number inputs in Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+/* Enhanced GPA Display Container */
+.gpa-display {
+    margin-top: 30px;
+    padding: 30px 60px;
+    background: linear-gradient(145deg, #1a1d24, #13151a); /* Subtle dark gradient */
+    border: 2px solid #10b981; /* Slightly thicker border */
+    border-radius: 16px; 
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15), inset 0 0 20px rgba(16, 185, 129, 0.05); /* Outer and inner glow */
+    text-align: center;
+    display: none; /* Hidden by default until JS renders it */
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Space between title and number */
+    min-width: 280px;
+}
+
+/* Shows the container as a flexbox when JS injects content */
+.gpa-display:not(:empty) {
+    display: flex;
+}
+
+/* Style the "Current GPA" Heading */
+.gpa-display h2 {
+    color: #94a3b8; /* Slate gray to let the number be the star */
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+}
+
+/* Style the GPA Number */
+.gpa-display p {
+    color: #10b981; /* Vibrant green */
+    font-size: 3.5rem !important; /* Overrides the inline JS style */
+    font-weight: 800 !important;
+    margin: 0;
+    line-height: 1;
+    text-shadow: 0 0 25px rgba(16, 185, 129, 0.4); /* Strong glowing effect */
+}
